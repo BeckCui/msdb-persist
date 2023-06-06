@@ -1,12 +1,14 @@
 package com.dhl.fin.api.common.filters;
 
-import com.dhl.fin.api.common.config.WebConfig;
-import com.dhl.fin.api.common.enums.CacheKeyEnum;
 import com.dhl.fin.api.common.service.RedisService;
-import com.dhl.fin.api.common.util.*;
+import com.dhl.fin.api.common.util.CollectorUtil;
+import com.dhl.fin.api.common.util.MapUtil;
+import com.dhl.fin.api.common.util.ObjectUtil;
+import com.dhl.fin.api.common.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -25,22 +27,14 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Component
-public class RequestFilter extends OncePerRequestFilterBase {
+public class RequestFilter extends OncePerRequestFilter {
 
 
     @Autowired
     private RedisService redisService;
 
-    public RequestFilter(WebConfig webConfig) {
-        super(webConfig);
-    }
-
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
-
-        if (!httpServletRequest.getRequestURI().contains("/ws/")) {
-            recordRequestTimes();
-        }
 
         HttpServletRequest modifiedRequest = new SomeHttpServletRequest(httpServletRequest);
 
@@ -48,62 +42,6 @@ public class RequestFilter extends OncePerRequestFilterBase {
 
     }
 
-
-    private void recordRequestTimes() {
-        String appCode = SpringContextUtil.getPropertiesValue("custom.projectCode");
-        countActiveUser(appCode);
-    }
-
-
-    /**
-     * 统计活跃用户
-     *
-     * @param appCode
-     */
-    public void countActiveUser(String appCode) {
-        Map appActiveUsers = redisService.getMap(CacheKeyEnum.ACTIVE_USER);
-        String uuid = WebUtil.getLoginUser().getUuid();
-
-        if (StringUtil.isEmpty(uuid)) {
-            return;
-        }
-
-        if (ObjectUtil.isNull(appActiveUsers)) {
-            appActiveUsers = new HashMap();
-        }
-
-        Map appKV = MapUtil.getMap(appActiveUsers, appCode);
-        Map app = redisService.getProject(appCode);
-        String appEnName = ObjectUtil.notNull(app) ? MapUtil.getString(app, "enName") : null;
-        Map users = null;
-        Map loginUsers = null;
-        if (ObjectUtil.isNull(appKV)) {
-            appKV = new HashMap();
-            users = new HashMap<>();
-            loginUsers = new HashMap<>();
-            appKV.put("users", users);
-            appKV.put("loginUsers", loginUsers);
-        } else {
-            users = MapUtil.getMap(appKV, "users");
-            loginUsers = MapUtil.getMap(appKV, "loginUsers");
-            if (ObjectUtil.isNull(loginUsers)) {
-                loginUsers = new HashMap();
-            }
-            if (ObjectUtil.isNull(users)) {
-                users = new HashMap();
-            }
-        }
-
-
-        appKV.put("appEnName", appEnName);
-
-        users.put(uuid, DateUtil.getFullTime(new Date()));
-        loginUsers.put(uuid, DateUtil.getFullTime(new Date()));
-
-        appActiveUsers.put(appCode, appKV);
-
-        redisService.put(CacheKeyEnum.ACTIVE_USER, appActiveUsers);
-    }
 
 
     class SomeHttpServletRequest extends HttpServletRequestWrapper {

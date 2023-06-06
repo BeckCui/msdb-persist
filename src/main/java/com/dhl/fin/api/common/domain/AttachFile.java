@@ -15,8 +15,15 @@ import javax.persistence.Table;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Entity
-@Table(name = "t_attachfile")
+@Table(name = "t_attach_file")
 public class AttachFile extends BasicDomain {
+
+    public AttachFile() {
+    }
+
+    public AttachFile(Long id) {
+        this.id = id;
+    }
 
     @Column(columnDefinition = "varchar(250)")
     private String directory;

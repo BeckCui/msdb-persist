@@ -48,8 +48,8 @@ public class AttachFileServiceImpl extends CommonService<AttachFile> {
     public void insert(AttachFile domain) throws SQLException {
         SqlSessionFactory sqlSessionFactory = SpringContextUtil.getBean(SqlSessionFactory.class);
         String uuid = WebUtil.getLoginUser().getUuid();
-        String sql = String.format("insert into t_attachfile(create_time,create_user,update_time,update_user,directory,file_name,md5,size,type,store_location) " +
-                        "values(getDate(),'%s',getDate(),'%s','%s','%s','%s',%s,'%s','%s')",
+        String sql = String.format("insert into t_attach_file(create_time,create_user,update_time,update_user,directory,file_name,md5,size,type,store_location) " +
+                        "values(now(),'%s',now(),'%s','%s','%s','%s',%s,'%s','%s')",
                 uuid, uuid, domain.getDirectory(), domain.getFileName(), domain.getMd5(), domain.getSize(), domain.getType(), domain.getStoreLocation());
 
         String columnNames[] = new String[]{"id"};
@@ -66,7 +66,7 @@ public class AttachFileServiceImpl extends CommonService<AttachFile> {
     public AttachFile get(Long id) throws SQLException {
         SqlSessionFactory sqlSessionFactory = SpringContextUtil.getBean(SqlSessionFactory.class);
         Statement statement = sqlSessionFactory.openSession().getConnection().createStatement();
-        ResultSet resultSet = statement.executeQuery("select * from t_attachfile where id = " + id);
+        ResultSet resultSet = statement.executeQuery("select * from t_attach_file where id = " + id);
         if (resultSet.next()) {
             return getDomain(resultSet);
         }
@@ -77,7 +77,7 @@ public class AttachFileServiceImpl extends CommonService<AttachFile> {
         SqlSessionFactory sqlSessionFactory = SpringContextUtil.getBean(SqlSessionFactory.class);
         Statement statement = sqlSessionFactory.openSession().getConnection().createStatement();
         String idStr = Arrays.stream(ids).map(Objects::toString).collect(Collectors.joining(","));
-        ResultSet resultSet = statement.executeQuery("select * from t_attachfile where id in (" + idStr + ")");
+        ResultSet resultSet = statement.executeQuery("select * from t_attach_file where id in (" + idStr + ")");
         List<AttachFile> attachFiles = new LinkedList<>();
         while (resultSet.next()) {
             attachFiles.add(getDomain(resultSet));
@@ -113,7 +113,7 @@ public class AttachFileServiceImpl extends CommonService<AttachFile> {
         String filePath = file.getDirectory() + File.separator + file.getMd5();
         FilesUtil.delete(filePath);
 
-        statement.execute("delete from t_attachfile where id = " + id);
+        statement.execute("delete from t_attach_file where id = " + id);
 
     }
 

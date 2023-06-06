@@ -3,11 +3,13 @@ package com.dhl.fin.api.common.util;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.symmetric.AES;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.codec.net.URLCodec;
 import org.apache.commons.io.IOUtils;
 import org.jasypt.encryption.pbe.PooledPBEStringEncryptor;
 import org.jasypt.encryption.pbe.config.SimpleStringPBEConfig;
 
 import java.io.*;
+import java.net.URLDecoder;
 import java.util.Random;
 
 /**

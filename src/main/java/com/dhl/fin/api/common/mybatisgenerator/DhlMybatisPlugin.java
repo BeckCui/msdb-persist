@@ -315,12 +315,12 @@ public class DhlMybatisPlugin extends PluginAdapter {
                     .collect(Collectors.toList());
 
             list1 = Arrays.stream(document.getRootElement().getElements()
-                    .stream()
-                    .filter(p -> ((XmlElement) p).getName().equals("sql"))
-                    .map(p -> ((XmlElement) p).getElements()).findFirst().get()
-                    .stream()
-                    .map(p -> ((TextElement) p).getContent()).collect(joining())
-                    .split(","))
+                            .stream()
+                            .filter(p -> ((XmlElement) p).getName().equals("sql"))
+                            .map(p -> ((XmlElement) p).getElements()).findFirst().get()
+                            .stream()
+                            .map(p -> ((TextElement) p).getContent()).collect(joining())
+                            .split(","))
                     .filter(p -> p.endsWith("_id"))
                     .map(p -> p.replaceAll("_id", "").trim())
                     .collect(Collectors.toList());
@@ -539,7 +539,8 @@ public class DhlMybatisPlugin extends PluginAdapter {
 
         XmlElement selectEle = document.getRootElement().getElements().stream().map(p -> (XmlElement) p).filter(p -> p.getName().equals("select")).findFirst().get();
 
-        TextElement topOneText = new TextElement("select  <if test='selectOne'>top 1</if>");
+        TextElement topOneText = new TextElement("select ");
+
         selectEle.getElements().set(0, topOneText);
 
         XmlElement sqlElement = new XmlElement("sql");
@@ -556,6 +557,7 @@ public class DhlMybatisPlugin extends PluginAdapter {
         //添加orderCondition
         sqlElement.addElement(getOrderSql());
 
+        sqlElement.addElement(new TextElement("<if test='selectOne'>limit 1</if>"));
 
         document.getRootElement().getElements().add(2, sqlElement);
 
@@ -646,7 +648,7 @@ public class DhlMybatisPlugin extends PluginAdapter {
         selectElement.addElement(new TextElement("where 1 = 1 "));
         selectElement.addElement(getWhereSql());
         selectElement.addElement(getOrderSql());
-        selectElement.addElement(new TextElement("offset ${startIndex} rows fetch next ${length} rows only)"));
+        selectElement.addElement(new TextElement("limit ${startIndex} , ${length})"));
 
         selectElement.addElement(new TextElement("select <include refid=\"Base_Column_List\" />"));
         selectElement.addElement(new TextElement("from t_" + domainSimpleName + " " + domainSimpleName));

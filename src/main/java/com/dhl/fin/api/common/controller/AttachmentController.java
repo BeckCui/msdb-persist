@@ -61,6 +61,25 @@ public class AttachmentController {
 
     }
 
+    @RequestMapping("view/picture/{id}")
+    public void viewPicture(HttpServletResponse response, @PathVariable Long id) throws Exception {
+        AttachFile attachFile = attachFileService.get(id);
+        String location = attachFile.getStoreLocation();
+        String type = attachFile.getType().toLowerCase();
+        String filePath = attachFile.getDirectory() + File.separator + attachFile.getMd5();
+        response.setContentType("image/" + type);
+
+        if (StringUtil.isNotEmpty(location)) {
+            if (location.equals(StoreLocationEnum.LOCAL.getName())) {
+                File targetFile = FileUtils.getFile(filePath);
+                FileUtils.copyFile(targetFile, response.getOutputStream());
+            } else if (location.equals(StoreLocationEnum.FTP.getName())) {
+                FTPUtil.build().downLoadToClient(filePath, response);
+            }
+        }
+    }
+
+
     @RequestMapping("download/{id}")
     public void download(HttpServletResponse response, @PathVariable Long id) throws Exception {
         AttachFile attachFile = attachFileService.get(id);

@@ -1,7 +1,6 @@
 package com.dhl.fin.api.common.util;
 
 import com.dhl.fin.api.common.dto.UserInfo;
-import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -23,9 +22,6 @@ public class WebUtil {
     public static final String FIRST_LOGIN_ACCESS = "firstLoginAccess";
 
     private static String CTX;
-
-    private static SessionRegistry sessionRegistry;
-
 
     public static HttpServletRequest getRequest() {
         if (RequestContextHolder.getRequestAttributes() != null) {
@@ -245,14 +241,6 @@ public class WebUtil {
         return Locale.SIMPLIFIED_CHINESE;
     }
 
-
-    public static SessionRegistry getSessionRegistry() {
-        return sessionRegistry;
-    }
-
-    public static void setSessionRegistry(SessionRegistry sessionRegistry) {
-        WebUtil.sessionRegistry = sessionRegistry;
-    }
 
 
     private static LocaleResolver getLocaleResolver() {
