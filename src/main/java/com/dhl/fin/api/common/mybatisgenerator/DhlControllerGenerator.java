@@ -5,6 +5,7 @@ import org.mybatis.generator.codegen.AbstractJavaClientGenerator;
 import org.mybatis.generator.codegen.AbstractXmlGenerator;
 import org.mybatis.generator.codegen.mybatis3.javamapper.elements.*;
 import org.mybatis.generator.codegen.mybatis3.xmlmapper.XMLMapperGenerator;
+import org.mybatis.generator.config.JavaClientGeneratorConfiguration;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,20 +30,21 @@ public class DhlControllerGenerator extends AbstractJavaClientGenerator {
     @Override
     public List<CompilationUnit> getCompilationUnits() {
         String domainName = introspectedTable.getTableConfiguration().getDomainObjectName();
+        JavaClientGeneratorConfiguration clientGeneratorConfiguration = this.context.getJavaClientGeneratorConfiguration();
 
-        FullyQualifiedJavaType type = new FullyQualifiedJavaType("com.dhl.fin.api.controller." + domainName + "Control");
+        FullyQualifiedJavaType type = new FullyQualifiedJavaType(clientGeneratorConfiguration.getTargetPackage() + ".controller." + domainName + "Control");
         TopLevelClass interfaze = new TopLevelClass(type);
         interfaze.setVisibility(JavaVisibility.PUBLIC);
 
 
-        FullyQualifiedJavaType fqjt = new FullyQualifiedJavaType("com.dhl.fin.api.common.controller.CommonController<" + domainName + ">");
+        FullyQualifiedJavaType superClass = new FullyQualifiedJavaType("com.dhl.fin.api.common.controller.CommonController<" + domainName + ">");
         interfaze.addImportedType("com.dhl.fin.api.common.controller.CommonController");
         interfaze.addImportedType("org.springframework.web.bind.annotation.RequestMapping");
         interfaze.addImportedType("org.springframework.web.bind.annotation.RestController");
         interfaze.addImportedType(getDomainType());
         interfaze.addAnnotation("@RestController");
         interfaze.addAnnotation("@RequestMapping({\"" + domainName.toLowerCase() + "\"})");
-        interfaze.addSuperInterface(fqjt);
+        interfaze.addSuperInterface(superClass);
 
         List<CompilationUnit> answer = new ArrayList<>();
         answer.add(interfaze);

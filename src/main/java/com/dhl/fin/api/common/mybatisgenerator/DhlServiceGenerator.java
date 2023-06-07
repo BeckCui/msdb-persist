@@ -7,6 +7,7 @@ import org.mybatis.generator.api.dom.java.TopLevelClass;
 import org.mybatis.generator.codegen.AbstractJavaClientGenerator;
 import org.mybatis.generator.codegen.AbstractXmlGenerator;
 import org.mybatis.generator.codegen.mybatis3.xmlmapper.XMLMapperGenerator;
+import org.mybatis.generator.config.JavaClientGeneratorConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +31,9 @@ public class DhlServiceGenerator extends AbstractJavaClientGenerator {
     @Override
     public List<CompilationUnit> getCompilationUnits() {
         String domainName = introspectedTable.getTableConfiguration().getDomainObjectName();
+        JavaClientGeneratorConfiguration clientGeneratorConfiguration = this.context.getJavaClientGeneratorConfiguration();
 
-        FullyQualifiedJavaType type = new FullyQualifiedJavaType("com.dhl.fin.api.service." + domainName + "ServiceImpl");
+        FullyQualifiedJavaType type = new FullyQualifiedJavaType(clientGeneratorConfiguration.getTargetPackage() + ".service." + domainName + "ServiceImpl");
         TopLevelClass interfaze = new TopLevelClass(type);
         interfaze.setVisibility(JavaVisibility.PUBLIC);
 

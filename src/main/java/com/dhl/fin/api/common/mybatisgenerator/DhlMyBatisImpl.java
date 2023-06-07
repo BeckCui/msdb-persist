@@ -50,10 +50,15 @@ public class DhlMyBatisImpl extends IntrospectedTableMyBatis3Impl {
             javaGenerator = new AnnotatedClientGenerator(getClientProject());
         } else if ("MAPPER".equalsIgnoreCase(type)) {
             javaGenerator = new DhlMybatisDaoGenerator(getClientProject());
+        } else if ("CONTROL".equalsIgnoreCase(type)) {
+            AbstractJavaGenerator javaServiceGenerator = new DhlServiceGenerator(getClientProject());
+            initializeAbstractGenerator(javaServiceGenerator, null, null);
+            javaGenerators.add(javaServiceGenerator);
+
+            javaGenerator = new DhlControllerGenerator(getClientProject());
         } else {
             javaGenerator = (AbstractJavaClientGenerator) ObjectFactory.createInternalObject(type);
         }
-
         return javaGenerator;
     }
 
@@ -66,18 +71,14 @@ public class DhlMyBatisImpl extends IntrospectedTableMyBatis3Impl {
      */
     @Override
     protected void calculateJavaModelGenerators(List<String> warnings, ProgressCallback progressCallback) {
+
+
         if (getRules().generateExampleClass()) {
             AbstractJavaGenerator javaGenerator = new ExampleGenerator(getExampleProject());
             initializeAbstractGenerator(javaGenerator, warnings, progressCallback);
             javaGenerators.add(javaGenerator);
         }
-        AbstractJavaGenerator dhlControlGenerator = new DhlControllerGenerator("ruoyi-admin/src/main/java");
-        initializeAbstractGenerator(dhlControlGenerator, warnings, progressCallback);
-        javaGenerators.add(dhlControlGenerator);
 
-        AbstractJavaGenerator dhlServiceGenerator = new DhlServiceGenerator("ruoyi-admin/src/main/java");
-        initializeAbstractGenerator(dhlServiceGenerator, warnings, progressCallback);
-        javaGenerators.add(dhlServiceGenerator);
 
         if (getRules().generatePrimaryKeyClass()) {
             AbstractJavaGenerator javaGenerator = new PrimaryKeyGenerator(getModelProject());
