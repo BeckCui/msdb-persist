@@ -50,12 +50,6 @@ public class DhlMyBatisImpl extends IntrospectedTableMyBatis3Impl {
             javaGenerator = new AnnotatedClientGenerator(getClientProject());
         } else if ("MAPPER".equalsIgnoreCase(type)) {
             javaGenerator = new DhlMybatisDaoGenerator(getClientProject());
-        } else if ("CONTROL".equalsIgnoreCase(type)) {
-            AbstractJavaGenerator javaServiceGenerator = new DhlServiceGenerator(getClientProject());
-            initializeAbstractGenerator(javaServiceGenerator, null, null);
-            javaGenerators.add(javaServiceGenerator);
-
-            javaGenerator = new DhlControllerGenerator(getClientProject());
         } else {
             javaGenerator = (AbstractJavaClientGenerator) ObjectFactory.createInternalObject(type);
         }
@@ -64,14 +58,13 @@ public class DhlMyBatisImpl extends IntrospectedTableMyBatis3Impl {
 
 
     /**
-     * 重写 Entity 类
+     * 生成Control和Service的java
      *
      * @param warnings
      * @param progressCallback
      */
     @Override
     protected void calculateJavaModelGenerators(List<String> warnings, ProgressCallback progressCallback) {
-
 
         if (getRules().generateExampleClass()) {
             AbstractJavaGenerator javaGenerator = new ExampleGenerator(getExampleProject());
@@ -87,9 +80,17 @@ public class DhlMyBatisImpl extends IntrospectedTableMyBatis3Impl {
         }
 
         if (getRules().generateBaseRecordClass()) {
-            AbstractJavaGenerator javaGenerator = new DhlMybatisEntityGenerator(getModelProject());
-            initializeAbstractGenerator(javaGenerator, warnings, progressCallback);
-            javaGenerators.add(javaGenerator);
+            AbstractJavaGenerator javaControlGenerator = new DhlControllerGenerator(getModelProject());
+            initializeAbstractGenerator(javaControlGenerator, warnings, progressCallback);
+            javaGenerators.add(javaControlGenerator);
+
+            AbstractJavaGenerator javaServiceGenerator = new DhlServiceGenerator(getModelProject());
+            initializeAbstractGenerator(javaServiceGenerator, warnings, progressCallback);
+            javaGenerators.add(javaServiceGenerator);
+
+//            AbstractJavaGenerator javaGenerator = new DhlMybatisEntityGenerator(getModelProject());
+//            initializeAbstractGenerator(javaGenerator, warnings, progressCallback);
+//            javaGenerators.add(javaGenerator);
         }
 
         if (getRules().generateRecordWithBLOBsClass()) {
