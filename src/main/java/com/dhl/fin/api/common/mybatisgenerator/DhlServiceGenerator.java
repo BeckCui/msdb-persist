@@ -51,8 +51,10 @@ public class DhlServiceGenerator extends AbstractJavaGenerator {
         FullyQualifiedJavaType fqjt = new FullyQualifiedJavaType("com.dhl.fin.api.common.service.CommonService<" + domainName + ">");
         interfaze.addImportedType("com.dhl.fin.api.common.service.CommonService");
         interfaze.addImportedType("org.springframework.stereotype.Service");
+        interfaze.addImportedType("org.springframework.transaction.annotation.Transactional");
         interfaze.addImportedType(getDomainType());
         interfaze.addAnnotation("@Service");
+        interfaze.addAnnotation("@Transactional");
         interfaze.addSuperInterface(fqjt);
 
         List<CompilationUnit> answer = new ArrayList<>();

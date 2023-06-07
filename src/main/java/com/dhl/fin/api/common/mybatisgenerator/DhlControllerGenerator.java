@@ -2,6 +2,7 @@ package com.dhl.fin.api.common.mybatisgenerator;
 
 import cn.hutool.core.io.FileUtil;
 import com.dhl.fin.api.common.util.ObjectUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.mybatis.generator.api.dom.java.*;
 import org.mybatis.generator.codegen.AbstractJavaClientGenerator;
 import org.mybatis.generator.codegen.AbstractJavaGenerator;
@@ -9,6 +10,7 @@ import org.mybatis.generator.codegen.AbstractXmlGenerator;
 import org.mybatis.generator.codegen.mybatis3.javamapper.elements.*;
 import org.mybatis.generator.codegen.mybatis3.xmlmapper.XMLMapperGenerator;
 import org.mybatis.generator.config.JavaClientGeneratorConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -50,7 +52,11 @@ public class DhlControllerGenerator extends AbstractJavaGenerator {
         interfaze.addImportedType("com.dhl.fin.api.common.controller.CommonController");
         interfaze.addImportedType("org.springframework.web.bind.annotation.RequestMapping");
         interfaze.addImportedType("org.springframework.web.bind.annotation.RestController");
+        interfaze.addImportedType("org.springframework.transaction.annotation.Transactional");
+        interfaze.addImportedType("lombok.extern.slf4j.Slf4j");
         interfaze.addImportedType(getDomainType());
+        interfaze.addAnnotation("@Slf4j");
+        interfaze.addAnnotation("@Transactional(rollbackFor = Exception.class)");
         interfaze.addAnnotation("@RestController");
         interfaze.addAnnotation("@RequestMapping({\"" + domainName.toLowerCase() + "\"})");
         interfaze.addSuperInterface(superClass);
